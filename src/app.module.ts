@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BullModule } from '@nestjs/bull';
 import { NotificationModule } from './notification/notification.module';
 import { TaskModule } from './task/task.module';
 
@@ -22,10 +21,6 @@ const {
                 useFindAndModify: false,
             },
         ),
-        BullModule.registerQueue({
-            name: 'notify',
-            redis: { host: '0.0.0.0', port: 6379 },
-        }),
         NotificationModule,
         TaskModule,
     ],
