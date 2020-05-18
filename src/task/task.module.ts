@@ -6,6 +6,7 @@ import { TaskConsumer } from './task.processor';
 import { ProvidersMockService } from './providers.mock';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NotificationSchema } from 'src/notification/schemas/notification.schema';
+import { UserSchema } from 'src/user/schemas/user.schema';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { NotificationSchema } from 'src/notification/schemas/notification.schema
         }),
         MongooseModule.forFeature([
             { name: 'Notification', schema: NotificationSchema },
+            { name: 'User', schema: UserSchema },
         ]),
     ],
     providers: [TaskService, TaskConsumer, ProvidersMockService],

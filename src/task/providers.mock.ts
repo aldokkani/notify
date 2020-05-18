@@ -1,16 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { User } from 'src/user/interfaces/user.interface';
 
 @Injectable()
 export class ProvidersMockService {
-    async sendSMS() {
-        console.log('Sending SMS...');
+    private async sendSMS(text: string, user: User) {
+        console.log(`Sending SMS: ${text}; to: ${user}...`);
     }
 
-    async sendEmail() {
-        console.log('Sending Email...');
+    private async sendEmail(text: string, user: User) {
+        console.log(`Sending Email: ${text}; to: ${user}...`);
     }
 
-    async sendPushNotification() {
-        console.log('Sending Push Notification...');
+    private async sendPushNotification(text: string, user: User) {
+        console.log(`Sending Push Notification: ${text}; to: ${user}...`);
+    }
+
+    async handleMedium(medium: string, text: string, user: User) {
+        switch (medium) {
+            case 'SMS':
+                this.sendSMS(text, user);
+                break;
+
+            case 'EMAIL':
+                this.sendEmail(text, user);
+                break;
+
+            case 'PUSH_NOTIFICATION':
+                this.sendPushNotification(text, user);
+                break;
+
+            default:
+                throw new NotImplementedException(
+                    `Medium:${medium} is not supported!`,
+                );
+        }
     }
 }

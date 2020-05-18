@@ -10,7 +10,7 @@ import { ProvidersMockService } from './providers.mock';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Notification } from 'src/notification/interfaces/notification.interface';
-import { NotImplementedException } from '@nestjs/common';
+import { User } from 'src/user/interfaces/user.interface';
 
 @Processor('notify')
 export class TaskConsumer {
@@ -18,29 +18,30 @@ export class TaskConsumer {
         private providersMockService: ProvidersMockService,
         @InjectModel('Notification')
         private notificationModel: Model<Notification>,
+        @InjectModel('User') private userModel: Model<User>,
     ) {}
 
     @Process('group')
     async processGroupTasks(job: Job<any>): Promise<any> {
         const { notificationId, userId, mediums } = job.data;
-        for (const medium of mediums) {
-            switch (medium) {
-                case 'SMS':
-                    this.providersMockService.sendSMS();
-                    break;
+        const user = await this.userModel.findById(userId).exec();
+        const notification = await this.notificationModel
+            .findOne({
+                _id: notificationId,
+                $or: [
+                    { 'translations.language': user.preferredLang },
+                    { 'translations.isDefault': true },
+                ],
+            })
+            .exec();
+        if (notification && user) {
+            const { text } = notification.translations.find(
+                trans =>
+                    trans.language === user.preferredLang || trans.isDefault,
+            );
 
-                case 'EMAIL':
-                    this.providersMockService.sendEmail();
-                    break;
-
-                case 'PUSH_NOTIFICATION':
-                    this.providersMockService.sendPushNotification();
-                    break;
-
-                default:
-                    throw new NotImplementedException(
-                        `Medium:${medium} is not supported!`,
-                    );
+            for (const medium of mediums) {
+                this.providersMockService.handleMedium(medium, text, user);
             }
         }
         return {};
@@ -49,24 +50,23 @@ export class TaskConsumer {
     @Process('personal')
     async processPersonalTasks(job: Job<any>): Promise<any> {
         const { notificationId, userId, mediums } = job.data;
-        for (const medium of mediums) {
-            switch (medium) {
-                case 'SMS':
-                    this.providersMockService.sendSMS();
-                    break;
-
-                case 'EMAIL':
-                    this.providersMockService.sendEmail();
-                    break;
-
-                case 'PUSH_NOTIFICATION':
-                    this.providersMockService.sendPushNotification();
-                    break;
-
-                default:
-                    throw new NotImplementedException(
-                        `Medium:${medium} is not supported!`,
-                    );
+        const user = await this.userModel.findById(userId).exec();
+        const notification = await this.notificationModel
+            .findOne({
+                _id: notificationId,
+                $or: [
+                    { 'translations.language': user.preferredLang },
+                    { 'translations.isDefault': true },
+                ],
+            })
+            .exec();
+        if (notification && user) {
+            const { text } = notification.translations.find(
+                trans =>
+                    trans.language === user.preferredLang || trans.isDefault,
+            );
+            for (const medium of mediums) {
+                this.providersMockService.handleMedium(medium, text, user);
             }
         }
         return {};
