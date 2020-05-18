@@ -17,7 +17,7 @@ export class NotificationService {
 
     async create(notificationData: any): Promise<any> {
         // TODO: unique lang constrain
-        const translation = await new this.notificationTranslationModel(
+        const translation = new this.notificationTranslationModel(
             notificationData,
         );
         return this.notificationModel.findByIdAndUpdate(

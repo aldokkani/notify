@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NotificationModule } from './notification/notification.module';
 import { TaskModule } from './task/task.module';
+import { UserModule } from './user/user.module';
 
 const {
     MONGO_HOST,
@@ -23,6 +24,7 @@ const {
         ),
         NotificationModule,
         TaskModule,
+        UserModule,
     ],
 })
 export class AppModule {}

@@ -1,16 +1,12 @@
 import * as mongoose from 'mongoose';
-
-export enum SupportedLanguages {
-    EN = 'en',
-    AR = 'ar',
-}
+import { SupportedLanguagesEnum } from '../interfaces/notification.interface';
 
 export const NotificationTranslationSchema = new mongoose.Schema(
     {
         text: String,
         language: {
             type: String,
-            enum: [SupportedLanguages.EN, SupportedLanguages.AR],
+            enum: [SupportedLanguagesEnum.EN, SupportedLanguagesEnum.AR],
         },
         isDefault: Boolean,
     },
