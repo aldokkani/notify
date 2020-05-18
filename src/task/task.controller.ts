@@ -7,7 +7,7 @@ export class TaskController {
     constructor(private taskService: TaskService) {}
 
     @Post('group')
-    async handleGroupNotification(@Body() notifyBody: any): Promise<Job> {
+    async handleGroupNotification(@Body() notifyBody: any): Promise<Job[]> {
         const { notificationId, users, mediums } = notifyBody;
         return this.taskService.addGroupNotification(
             notificationId,

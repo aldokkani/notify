@@ -6,20 +6,69 @@ import {
     OnQueueError,
 } from '@nestjs/bull';
 import { Job } from 'bull';
+import { ProvidersMockService } from './providers.mock';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Notification } from 'src/notification/interfaces/notification.interface';
+import { NotImplementedException } from '@nestjs/common';
 
 @Processor('notify')
 export class TaskConsumer {
+    constructor(
+        private providersMockService: ProvidersMockService,
+        @InjectModel('Notification')
+        private notificationModel: Model<Notification>,
+    ) {}
+
     @Process('group')
-    async processGroupTasks(job: Job<unknown>): Promise<any> {
-        // console.log(job.id);
-        // console.log(job.data);
+    async processGroupTasks(job: Job<any>): Promise<any> {
+        const { notificationId, userId, mediums } = job.data;
+        for (const medium of mediums) {
+            switch (medium) {
+                case 'SMS':
+                    this.providersMockService.sendSMS();
+                    break;
+
+                case 'EMAIL':
+                    this.providersMockService.sendEmail();
+                    break;
+
+                case 'PUSH_NOTIFICATION':
+                    this.providersMockService.sendPushNotification();
+                    break;
+
+                default:
+                    throw new NotImplementedException(
+                        `Medium:${medium} is not supported!`,
+                    );
+            }
+        }
         return {};
     }
 
     @Process('personal')
-    async processPersonalTasks(job: Job<unknown>): Promise<any> {
-        // console.log(job.id);
-        // console.log(job.data);
+    async processPersonalTasks(job: Job<any>): Promise<any> {
+        const { notificationId, userId, mediums } = job.data;
+        for (const medium of mediums) {
+            switch (medium) {
+                case 'SMS':
+                    this.providersMockService.sendSMS();
+                    break;
+
+                case 'EMAIL':
+                    this.providersMockService.sendEmail();
+                    break;
+
+                case 'PUSH_NOTIFICATION':
+                    this.providersMockService.sendPushNotification();
+                    break;
+
+                default:
+                    throw new NotImplementedException(
+                        `Medium:${medium} is not supported!`,
+                    );
+            }
+        }
         return {};
     }
 

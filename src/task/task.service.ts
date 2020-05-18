@@ -8,24 +8,20 @@ export class TaskService {
 
     async addGroupNotification(
         notificationId: string,
-        users: [string],
-        mediums: [string],
-    ): Promise<Job> {
-        return await this.notifyQueue.add(
-            'group',
-            {
-                notificationId,
-                users,
-                mediums,
-            },
-            { delay: Number(process.env.REQUESTS_LIMIT) || 0 },
-        );
+        users: string[],
+        mediums: string[],
+    ): Promise<Job[]> {
+        const bulkJobs = users.map(userId => ({
+            name: 'group',
+            data: { notificationId, mediums, userId },
+        }));
+        return await this.notifyQueue.addBulk(bulkJobs);
     }
 
     async addPersonalNotification(
         notificationId: string,
         userId: string,
-        mediums: [string],
+        mediums: string[],
     ): Promise<Job> {
         return await this.notifyQueue.add('personal', {
             notificationId,
