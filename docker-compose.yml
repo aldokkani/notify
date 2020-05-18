@@ -8,6 +8,7 @@ services:
       - .:/app
     depends_on:
       - db
+      - redis
     environment:
       - MONGO_HOST=db
       - MONGO_PORT=27017
@@ -24,3 +25,9 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
       - MONGO_INITDB_DATABASE=admin
+  redis:
+    image: redis:6.0.2
+    ports:
+      - "6379:6379"
+    # volumes:
+    #   - ${PWD}/redis:/data
